@@ -15,12 +15,12 @@ def mask_fn(env: gym.Env) -> np.ndarray:
     action_mask = np.ones(7)
     action_mask[::2] = 0
     #1010101 --> 6622244220 --> 1的位的动作可以被选择
-    #0101010 --> 33
+    #0101010 --> 335
     return action_mask
 
 env = make_vec_env(UavTrajectory, n_envs=1)
 env = ActionMasker(env, mask_fn)  # Wrap to enable masking
-model = MaskablePPO("MlpPolicy", env, gamma=0.4, seed=2, verbose=1, tensorboard_log = '/home/baseline/output')
+model = MaskablePPO("MlpPolicy", env, gamma=0.4, seed=3, verbose=1, tensorboard_log = '/home/baseline/output')
 model.learn(5_000)
 
 evaluate_policy(model, env, n_eval_episodes=20, reward_threshold=90, warn=False)
