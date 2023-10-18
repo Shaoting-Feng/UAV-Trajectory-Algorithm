@@ -137,6 +137,9 @@ class UavTrajectory(gym.Env):
         # added on 08.01
         self.episode = 0
 
+        # added on 10.18 to mask action on the top layer
+        self.last_move_act = 0
+
 
     def getObs(self):
         # edited on 07.29 for Version 1 - 2
@@ -326,10 +329,15 @@ class UavTrajectory(gym.Env):
 
 
     def step(self, action):
+        concrete_action = self.a.decode(action)
+
+        # added on 10.18 to mask actions on the top layer
+        if self.last_act == action and concrete_action[0] == 1:
+            action = self.last_move_act
+            concrete_action = self.a.decode(action)
+
         # added on 07.29 for Version 1 - 4
         action_batch.append(action)
-
-        concrete_action = self.a.decode(action)
 
         terminated = False
         truncated = False
@@ -358,6 +366,9 @@ class UavTrajectory(gym.Env):
             # added on 07.29 for Version 1 - 3
             self.photo_num = self.photo_num + 1  
             terminated, truncated = self.check_photo()
+
+            # added on 10.18 to handle last move action
+            self.last_move_act = action
         else:
             # edited on 08.15 for Version 8 - 3
             R = Reward(self.x_UAV, y_UAV, concrete_action[1], self.r_obj_list, self.x_obj_list, obj_num)
@@ -386,9 +397,14 @@ class UavTrajectory(gym.Env):
             r = r + sumR
 
             terminated, truncated = self.check_photo()
+
+            # deleted on 10.18 to force avoiding photoing continuously 
+            '''
             # try to avoid continuing photoing
             if self.last_act == action:
-                r = r - REPETE_PHOTO_MINUS 
+                r = r - REPETE_PHOTO_MINUS
+            '''
+            
             self.render_info = False
         self.last_act = action
 
