@@ -11,10 +11,7 @@ env = make_vec_env(UavTrajectory, n_envs=1)
 model = PPO("MlpPolicy", env, verbose=1, tensorboard_log = '/home/baseline/output')
 
 # edited on 08.15 for Version 8 - 1
-# model.learn(total_timesteps=100000, log_interval=1)
-
-# edited on 10.08 for modifying base codes
-model.learn(total_timesteps=10, log_interval=1)
+model.learn(total_timesteps=100000, log_interval=1)
 
 model.save('/home/baseline/model') 
 

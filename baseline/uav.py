@@ -154,7 +154,7 @@ class UavTrajectory(gym.Env):
         return obs
 
 
-    def reset(self, seed: int | None=None, options=None):
+    def reset(self, seed=None, options=None):
         """
         Important: the observation must be a numpy array
         :return: (np.array)
@@ -179,7 +179,7 @@ class UavTrajectory(gym.Env):
         # Initialize observation
         self.last_act = -1
 
-        return self.getObs().astype(np.float32), {} # empty info dict
+        return self.getObs().astype(np.float32), {}  # empty info dict
     
 
     def amplifyEnergy(self, E):
