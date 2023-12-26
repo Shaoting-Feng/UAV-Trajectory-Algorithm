@@ -25,7 +25,7 @@ REPETE_PHOTO_MINUS = 1
 done_factor = 0.8
 
 # deleted on 07.29 for Version 1 - 1
-#amplify_photo = obj_num * 10
+# amplify_photo = obj_num * 10
 
 # edited on 07.31 for Version 4 - 1
 bandwidth = 0.1
@@ -35,7 +35,8 @@ energy_importance = 0.1
 
 # max_photo_num used for limit the steps in one episode within 8
 # edited on 08.16 for Version 8 - 1
-max_photo_num = 40
+max_photo_num = 80
+# set to 60 results in UAV reaches 465 / 880
 
 # added on 07.29 for Version 1 - 4
 action_batch = []
@@ -140,6 +141,11 @@ class UavTrajectory(gym.Env):
         # added on 10.18 to mask action on the top layer
         self.last_move_act = 0
 
+        # added on 10.18 to record three aspects
+        self.cov = 0
+        self.ene = 0
+        self.bdw = 0
+
 
     def getObs(self):
         # edited on 07.29 for Version 1 - 2
@@ -181,6 +187,14 @@ class UavTrajectory(gym.Env):
 
         # Initialize observation
         self.last_act = -1
+
+        # added on 10.18 to mask action on the top layer
+        self.last_move_act = 0
+
+        # added on 10.18 to record three aspects
+        self.cov = 0
+        self.ene = 0
+        self.bdw = 0
 
         return self.getObs().astype(np.float32), {}  # empty info dict
     
@@ -343,12 +357,16 @@ class UavTrajectory(gym.Env):
         truncated = False
         if concrete_action[0] == 0:
             e = move_energy(abs(concrete_action[1]))
+            # e is positive; bigger e means bigger energy consumption
 
             # edited on 07.29 for Version 1 - 1 
             r =  self.amplifyEnergy(e)
 
             # deleted on 07.31 for Version 4 - 1
             #r = r + bandwidth * 1/3
+
+            # added on 10.18 to record three aspects
+            self.ene = self.ene + e
 
             self.x_UAV = self.x_UAV + concrete_action[1]
             move_away_flag = True
@@ -394,7 +412,7 @@ class UavTrajectory(gym.Env):
             # added on 07.29 for Version 1 - 1
             for i in range(obj_num):
                 sumR = sumR + self.new_r[i]
-            r = r + sumR
+            r = r + sumR / 4 # modified on 11.08
 
             terminated, truncated = self.check_photo()
 
@@ -404,6 +422,10 @@ class UavTrajectory(gym.Env):
             if self.last_act == action:
                 r = r - REPETE_PHOTO_MINUS
             '''
+
+            # added on 10.18 to record three aspects
+            self.cov = self.cov + sumR
+            self.bdw = self.bdw + 1
             
             self.render_info = False
         self.last_act = action
@@ -437,6 +459,11 @@ class UavTrajectory(gym.Env):
             # added on 07.31 for Version 4 - 1
             total_reward = sum(reward_batch)
             print("reward of this episode:", total_reward)
+
+            # added on 10.18 to record three aspects
+            print("coverage of this episode:", self.cov)
+            print("energy of this episode:", self.ene)
+            print("bandwidth of this episode:", self.bdw)
 
             reward_batch.clear()
 
