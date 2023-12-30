@@ -1,2 +1,0 @@
-gamma = 0.93
-batch_size = 64
