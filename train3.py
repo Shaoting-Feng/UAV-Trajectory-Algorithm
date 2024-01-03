@@ -8,12 +8,12 @@ from uav import UavTrajectory
 # added on 07.31 for Version 4 - 2
 env = make_vec_env(UavTrajectory, n_envs=1)
 
-model = PPO("MlpPolicy", env, gamma=0.96, verbose=1, tensorboard_log = '/home/baseline/output/gamma96batch512', batch_size=512)
+model = PPO("MlpPolicy", env, gamma=0.90, verbose=1, tensorboard_log = '/home/baseline/output/gamma90batch1024', batch_size=1024)
 
 # edited on 08.15 for Version 8 - 1
 model.learn(total_timesteps=200000, log_interval=1)
 
-model.save('/home/baseline/output/gamma96batch512/model') 
+model.save('/home/baseline/output/gamma90batch1024/model') 
 
 # deleted on 08.02 for Version 5 - 1
 '''
