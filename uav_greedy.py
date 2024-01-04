@@ -5,6 +5,7 @@ import math
 pi = math.pi
 from old_codes.Contribution_of_Coverage_Programming.energy import move_energy, photo_energy
 from old_codes.Contribution_of_Coverage_Programming.cont_mul_obj import Reward
+import copy
 
 # edited on 08.15 for Version 8 - 1
 obj_num = 10
@@ -284,9 +285,9 @@ class UavTrajectory():
         else:
             # edited on 08.15 for Version 8 - 3
             R = Reward(self.x_UAV, y_UAV, concrete_action[1], self.r_obj_list, self.x_obj_list, obj_num)
-            
-            c1 = self.period_cont
-            c2 = self.cont
+
+            c1 = copy.deepcopy(self.period_cont)
+            c2 = copy.deepcopy(self.cont)
 
             simp_r = R.get_reward()
             new_r = self.renew_record(simp_r)
@@ -306,8 +307,8 @@ class UavTrajectory():
             r = r + sumR / 4 # modified on 11.08
 
             # restore
-            self.period_cont = c1
-            self.cont = c2
+            self.period_cont = copy.deepcopy(c1)
+            self.cont = copy.deepcopy(c2)
         return r
     
 
