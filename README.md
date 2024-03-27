@@ -1,0 +1,1 @@
+Utilizes Stable-Baselines 3 PPO (Proximal Policy Optimization) for UAV (Unmanned Aerial Vehicles) trajectory training in a custom OpenAI’s gym environment. Features objects modeling using Central Angle and analytical geometry calculations.
