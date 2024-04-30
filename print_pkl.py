@@ -1,7 +1,7 @@
 import pickle
 
 # Specify the path to your pickle file
-pkl_file_path = '/home/baseline/output/objects.pkl'
+pkl_file_path = '/home/baseline/cont.pkl'
 
 # Open the file in binary read mode
 with open(pkl_file_path, 'rb') as file:
